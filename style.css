@@ -276,12 +276,15 @@ footer {
 }
 /* ================= WHATSAPP FLOAT ================= */
 
+/* ================= WHATSAPP FLOAT (SMALL & CLEAN) ================= */
+
 .whatsapp-float {
     position: fixed;
-    bottom: 20px;
-    left: 20px; /* لو تريدها يمين غيّرها إلى right */
-    width: 60px;
-    height: 60px;
+    bottom: 16px;
+    left: 16px;
+
+    width: 48px;   /* أصغر */
+    height: 48px;
 
     background: #25D366;
     border-radius: 50%;
@@ -290,32 +293,26 @@ footer {
     align-items: center;
     justify-content: center;
 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
     z-index: 999;
 
-    transition: 0.3s ease;
-    animation: floatPulse 2.5s infinite ease-in-out;
+    transition: 0.25s ease;
+    animation: floatSoft 3s infinite ease-in-out;
 }
 
 .whatsapp-float img {
-    width: 32px;
-    height: 32px;
+    width: 24px;   /* أصغر أيقونة */
+    height: 24px;
 }
 
 .whatsapp-float:hover {
-    transform: scale(1.15);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.35);
+    transform: scale(1.08);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.28);
 }
 
-/* حركة ناعمة */
-@keyframes floatPulse {
-    0% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-6px);
-    }
-    100% {
-        transform: translateY(0px);
-    }
+/* حركة خفيفة جدًا */
+@keyframes floatSoft {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-3px); }
+    100% { transform: translateY(0); }
 }

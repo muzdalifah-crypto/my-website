@@ -7,6 +7,35 @@
 
 <link rel="stylesheet" href="./style.css">
 <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* زر واتساب العائم */
+.whatsapp-float{
+    position:fixed;
+    bottom:20px;
+    left:20px;
+    width:48px;
+    height:48px;
+    background:#25D366;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 6px 18px rgba(0,0,0,0.25);
+    z-index:999;
+    transition:0.3s;
+}
+
+.whatsapp-float img{
+    width:28px;
+    height:28px;
+}
+
+.whatsapp-float:hover{
+    transform:scale(1.1);
+}
+</style>
+
 </head>
 
 <body>
@@ -99,10 +128,11 @@
 <div class="rights">© 2026 جميع الحقوق محفوظة</div>
 </footer>
 
-    <!-- WhatsApp Floating Button -->
-<a href="https://wa.me/249912624629" target="_blank" class="whatsapp-float" title="تواصل واتساب">
-    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
+<!-- WhatsApp Button -->
+<a href="https://wa.me/249912624629" target="_blank" class="whatsapp-float">
+    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
 </a>
+
 <!-- ================= JS ================= -->
 
 <script type="module">
@@ -126,7 +156,7 @@ const db = getFirestore(app);
 document.getElementById("dateBox").innerText =
 new Date().toLocaleDateString("ar-EG");
 
-// اختيار الخدمات
+// اختيار خدمات متعددة
 const cards = document.querySelectorAll(".service-card");
 const input = document.getElementById("serviceInput");
 
@@ -149,23 +179,15 @@ cards.forEach(card => {
   });
 });
 
-// إرسال الطلب
-const form = document.getElementById("orderForm");
-
-form.addEventListener("submit", async (e) => {
+// إرسال إلى Firebase
+document.getElementById("orderForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const name = form.querySelector('input[type="text"]').value.trim();
-  const phone = form.querySelector('input[type="tel"]').value.trim();
-  const service = input.value;
+  const name = document.querySelector('input[type="text"]').value.trim();
+  const phone = document.querySelector('input[type="tel"]').value.trim();
 
-  if (!name || !phone) {
-    alert("أدخل الاسم ورقم الهاتف");
-    return;
-  }
-
-  if (selected.length === 0) {
-    alert("اختر خدمة واحدة على الأقل");
+  if (!name || !phone || selected.length === 0) {
+    alert("أكمل البيانات واختر خدمة");
     return;
   }
 
@@ -173,20 +195,21 @@ form.addEventListener("submit", async (e) => {
     await addDoc(collection(db, "orders"), {
       name,
       phone,
-      service,
+      service: selected.join(", "),
       createdAt: serverTimestamp()
     });
 
     alert("تم إرسال الطلب بنجاح ✔");
 
-    form.reset();
+    document.getElementById("orderForm").reset();
     selected = [];
     input.value = "";
-    document.querySelectorAll(".service-card").forEach(c => c.classList.remove("active"));
+    document.querySelectorAll(".service-card")
+      .forEach(c => c.classList.remove("active"));
 
   } catch (err) {
-    console.error(err);
     alert("حدث خطأ في الإرسال");
+    console.error(err);
   }
 });
 </script>

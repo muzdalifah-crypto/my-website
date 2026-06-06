@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شركة صافي للنظافة والخدمات</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+    <div class="logo-area">
+        <img src="img/clean.png" alt="logo">
+        <span>شركة صافي للنظافة والخدمات</span>
+    </div>
+
+    <div class="right">بسم الله الرحمن الرحيم</div>
+    <div class="left" id="dateBox"></div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="overlay">
+
+        <h1>شركة صافي للنظافة والخدمات</h1>
+
+        <div class="logo-box">
+            <img src="img/clean.png" alt="logo">
+
+            <div class="logo-text">
+                <span>ثقة</span>
+                <span>سرعة</span>
+                <span>نظافة</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services">
+    <h2>خدماتنا</h2>
+
+    <div class="grid">
+        <div class="card">تنظيف المنازل <p>5000</p></div>
+        <div class="card">تنظيف الشقق <p>6000</p></div>
+        <div class="card">تنظيف الفلل <p>9000</p></div>
+        <div class="card">تنظيف المكاتب <p>7000</p></div>
+        <div class="card">تنظيف بعد البناء <p>10000</p></div>
+        <div class="card">تعقيم شامل <p>8000</p></div>
+    </div>
+</section>
+
+<!-- FORM -->
+<section class="form-section">
+
+<form id="orderForm">
+
+    <input type="text" placeholder="الاسم الكامل" required>
+    <input type="tel" placeholder="رقم الهاتف" required>
+
+    <input type="hidden" id="serviceInput">
+
+    <div class="service-grid">
+        <div class="service-card" data-value="تنظيف المنازل">تنظيف المنازل</div>
+        <div class="service-card" data-value="تنظيف الشقق">تنظيف الشقق</div>
+        <div class="service-card" data-value="تنظيف الفلل">تنظيف الفلل</div>
+        <div class="service-card" data-value="تنظيف المكاتب">تنظيف المكاتب</div>
+        <div class="service-card" data-value="تنظيف بعد البناء">تنظيف بعد البناء</div>
+        <div class="service-card" data-value="تعقيم شامل">تعقيم شامل</div>
+    </div>
+
+    <button type="submit">إرسال الطلب</button>
+
+</form>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+<div class="footer-content">
+
+    <div class="logo-footer">
+        <img src="img/clean.png" alt="logo">
+        <p>شركة صافي للنظافة والخدمات</p>
+    </div>
+
+    <div class="about">
+        <h3>نسعى باذن الله</h3>
+        <p>نظافة باحتراف وجودة عالية</p>
+    </div>
+
+</div>
+
+<div class="rights">© 2026 جميع الحقوق محفوظة</div>
+</footer>
+
+<!-- ================= JS ================= -->
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } 
+from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCNFhXdyZ6RqcxqNwQ0MoZi6cr8DBbOb3Q",
+  authDomain: "clean-company-39122.firebaseapp.com",
+  projectId: "clean-company-39122",
+  storageBucket: "clean-company-39122.firebasestorage.app",
+  messagingSenderId: "973645428061",
+  appId: "1:973645428061:web:809af6e30a3edc9ab2a4b4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// التاريخ
+document.getElementById("dateBox").innerText =
+new Date().toLocaleDateString("ar-EG");
+
+// اختيار الخدمات
+const cards = document.querySelectorAll(".service-card");
+const input = document.getElementById("serviceInput");
+
+let selected = [];
+
+cards.forEach(card => {
+  card.addEventListener("click", () => {
+
+    const value = card.dataset.value;
+
+    if (selected.includes(value)) {
+      selected = selected.filter(i => i !== value);
+      card.classList.remove("active");
+    } else {
+      selected.push(value);
+      card.classList.add("active");
+    }
+
+    input.value = selected.join(", ");
+  });
+});
+
+// إرسال الطلب
+const form = document.getElementById("orderForm");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = form.querySelector('input[type="text"]').value.trim();
+  const phone = form.querySelector('input[type="tel"]').value.trim();
+  const service = input.value;
+
+  if (!name || !phone) {
+    alert("أدخل الاسم ورقم الهاتف");
+    return;
+  }
+
+  if (selected.length === 0) {
+    alert("اختر خدمة واحدة على الأقل");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "orders"), {
+      name,
+      phone,
+      service,
+      createdAt: serverTimestamp()
+    });
+
+    alert("تم إرسال الطلب بنجاح ✔");
+
+    form.reset();
+    selected = [];
+    input.value = "";
+    document.querySelectorAll(".service-card").forEach(c => c.classList.remove("active"));
+
+  } catch (err) {
+    console.error(err);
+    alert("حدث خطأ في الإرسال");
+  }
+});
+</script>
+
+</body>
+</html>
